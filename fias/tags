@@ -1,0 +1,3 @@
+delete	/Users/oleg/projects/fias-update/address.py	/^        es.indices.delete(index=fiasData.ADDRESS_I/
+parse	/Users/oleg/projects/fias-update/address.py	/^    doc = parse(fiasData.WORK_DIR + address.addres/
+print	/Users/oleg/projects/fias-update/address.py	/^            print(ok, info)$/
