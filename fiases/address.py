@@ -7,12 +7,12 @@ from xml.dom.pulldom import parse
 from elasticsearch.helpers import parallel_bulk
 
 # Local modules:
-from fiasDownload import downloadUpdate, uprarUpdateAdddr, clearWorkDir
+from fiases.fias_download import downloadUpdate, uprarUpdateAdddr, clearWorkDir
 import fias_data
-from init_db import createConnection, IS_DEBUG
-from snapshot import createSnapshot
-from fiasInfo import getUpdateVersion
-from fiasDownload import downloadFull, unRarFullAdddr
+from fiases.init_db import createConnection, IS_DEBUG
+from fiases.snapshot import createSnapshot
+from fiases.fias_info import getUpdateVersion
+from fiases.fias_download import downloadFull, unRarFullAdddr
 
 
 def updateAddress(isDebug,address):

@@ -4,8 +4,8 @@ from urllib import request
 from tqdm import trange, tqdm
 from rarfile import RarFile
 from hurry.filesize import size, si
-from init_db import IS_DEBUG
-import fias_data
+from fiases.init_db import IS_DEBUG
+import fiases.fias_data
 
 
 class TqdmUpTo(tqdm):

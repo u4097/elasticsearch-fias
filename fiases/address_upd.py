@@ -8,12 +8,12 @@ from elasticsearch.helpers import parallel_bulk
 from elasticsearch_dsl import Search
 
 # Local modules:
-import fias_data
-from fias_download import downloadUpdate, uprarUpdateAdddr, clearWorkDir
-from fias_info import getUpdateVersion
-from snapshot import createSnapshot
-from update_info import findInfoDoc
-from fias_data import ES
+import fiases.fias_data
+from fiases.fias_download import downloadUpdate, uprarUpdateAdddr, clearWorkDir
+from fiases.fias_info import getUpdateVersion
+from fiases.snapshot import createSnapshot
+from fiases.update_info import findInfoDoc
+from fiases.fias_data import ES
 
 
 def addressUpdate(isDebug, address):

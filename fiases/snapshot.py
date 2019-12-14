@@ -1,6 +1,6 @@
 from elasticsearch.client import SnapshotClient
 from fias_data import ES
-import fias_data
+import fiases.fias_data
 
 
 def createSnapshot(repository, indexName):

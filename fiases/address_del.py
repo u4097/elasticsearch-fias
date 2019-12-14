@@ -9,10 +9,10 @@ from elasticsearch.helpers import scan, parallel_bulk, streaming_bulk
 from elasticsearch_dsl import Q, Search, Index, Document, Date, Nested, InnerDoc, Keyword, Text, Integer, Short, Long, Range
 
 # Local modules:
-from fiasDownload import downloadUpdate, uprarFullAdddr
-from fiasInfo import getUpdateVersion
-from fias_data import Address
-from init_db import createConnection
+from fiases.fias_download import downloadUpdate, uprarFullAdddr
+from fiases.fias_info import getUpdateVersion
+from fiases.fias_data import Address
+from fiases.init_db import createConnection
 
 address = Address(workDir='/Volumes/DATA/downloads/',
                   addressIndex='address')

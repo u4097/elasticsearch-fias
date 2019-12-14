@@ -1,17 +1,17 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
-import fias_data
-from fias_data import Address
-from fias_info import getUpdateVersion
-from address_upd import addressUpdate
-from house_upd import housesUpdate
-from update_info import findInfoDoc
-from init_db import createConnection, IS_DEBUG
-from fias_download import downloadUpdate, clearWorkDir
-from index_address import index
-from snapshot import createSnapshot, createFullSnapshot
-from fias_data import ES
+import fiases.fias_data
+from fiases.fias_data import Address
+from fiases.fias_info import getUpdateVersion
+from fiases.address_upd import addressUpdate
+from fiases.house_upd import housesUpdate
+from fiases.update_info import findInfoDoc
+from fiases.init_db import createConnection, IS_DEBUG
+from fiases.fias_download import downloadUpdate, clearWorkDir
+from fiases.index_address import index
+from fiases.snapshot import createSnapshot, createFullSnapshot
+from fiases.fias_data import ES
 
 
 def update(isDebug=False):

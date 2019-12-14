@@ -6,8 +6,8 @@ from elasticsearch_dsl import Index, \
     Document, Date, Nested, InnerDoc, Keyword, Text, Integer, Short, Long, Range
 from elasticsearch_dsl.connections import connections
 
-import fias_data
-from fias_data import ES
+import fiases.fias_data
+from fiases.fias_data import ES
 
 
 def index(isUpdate=True):

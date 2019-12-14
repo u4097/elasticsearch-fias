@@ -3,7 +3,7 @@
 # Статистика обновления ФИАС
 from elasticsearch_dsl import Q, Search, Index, Document, Date, Nested, Boolean,analyzer, tokenizer, InnerDoc, Completion, Keyword, Text, Integer
 
-import fias_data
+import fiases.fias_data
 
 INDEX = 'info'
 
