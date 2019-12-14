@@ -1,6 +1,6 @@
 from elasticsearch.client import SnapshotClient
-from fiasData import ES
-import fiasData
+from fias_data import ES
+import fias_data
 
 
 def createSnapshot(repository, indexName):
@@ -31,7 +31,7 @@ def createFullSnapshot(repository):
         pass
 
     sn_body = {
-        "indices": [fiasData.ADDRESS_INDEX, fiasData.HOUSE_INDEX],
+        "indices": [fias_data.ADDRESS_INDEX, fias_data.HOUSE_INDEX],
         "ignore_unavailable": "true",
         "include_global_state": "false",
         "metadata": {
@@ -42,7 +42,7 @@ def createFullSnapshot(repository):
     sn.create(repository=repository, snapshot="fias_full", body=sn_body)
 
 
-# from initDb import createConnection
+# from init_db import createConnection
 # es = createConnection(host='localhost', timeout=20)
 # createSnapshot(repository='fias', indexName='address', elasticsearch=es)
 # sn = SnapshotClient(es)

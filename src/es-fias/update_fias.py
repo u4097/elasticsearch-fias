@@ -1,17 +1,17 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
-import fiasData
-from fiasData import Address
-from fiasInfo import getUpdateVersion
-from addressUpd import addressUpdate
-from houseUpd import housesUpdate
-from updateInfo import findInfoDoc
-from initDb import createConnection, IS_DEBUG
-from fiasDownload import downloadUpdate, clearWorkDir
-from indexAddress import index
+import fias_data
+from fias_data import Address
+from fias_info import getUpdateVersion
+from address_upd import addressUpdate
+from house_upd import housesUpdate
+from update_info import findInfoDoc
+from init_db import createConnection, IS_DEBUG
+from fias_download import downloadUpdate, clearWorkDir
+from index_address import index
 from snapshot import createSnapshot, createFullSnapshot
-from fiasData import ES
+from fias_data import ES
 
 
 def update(isDebug=False):
@@ -19,13 +19,13 @@ def update(isDebug=False):
     print('обновление...')
     print()
 
-    address = fiasData.Address()
+    address = fias_data.Address()
     address.createPreprocessor(ES)
     # 1. версия
     getUpdateVersion()
 
     print('версия:')
-    print(fiasData.VERSION_REPORT_DATE)
+    print(fias_data.VERSION_REPORT_DATE)
     print()
 
     infoDoc = findInfoDoc()
@@ -39,7 +39,7 @@ def update(isDebug=False):
     print()
     print('дома...')
     print()
-    houses = fiasData.Houses()
+    houses = fias_data.Houses()
     houses.createPreprocessor(ES)
     HOUSE_CNT = housesUpdate(isDebug=True,houses=houses)
     infoDoc.update(rec_upd_houses=HOUSE_CNT)
@@ -58,7 +58,7 @@ def update(isDebug=False):
 
 
     # снэпшот
-    createFullSnapshot(repository=fiasData.REPOSITORY)
+    createFullSnapshot(repository=fias_data.REPOSITORY)
 
     #  очистка
     clearWorkDir()
@@ -68,4 +68,4 @@ def update(isDebug=False):
 
 update(isDebug=True)
 # index(isUpdate=False)
-# createFullSnapshot(repository=fiasData.REPOSITORY)
+# createFullSnapshot(repository=fias_data.REPOSITORY)

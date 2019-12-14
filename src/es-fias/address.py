@@ -8,22 +8,22 @@ from elasticsearch.helpers import parallel_bulk
 
 # Local modules:
 from fiasDownload import downloadUpdate, uprarUpdateAdddr, clearWorkDir
-import fiasData
-from initDb import createConnection, IS_DEBUG
+import fias_data
+from init_db import createConnection, IS_DEBUG
 from snapshot import createSnapshot
 from fiasInfo import getUpdateVersion
 from fiasDownload import downloadFull, unRarFullAdddr
 
 
 def updateAddress(isDebug,address):
-    # address = fiasData.Address()
+    # address = fias_data.Address()
     IS_DEBUG = isDebug
-    es = createConnection(host=fiasData.HOST, timeout=fiasData.TIME_OUT)
+    es = createConnection(host=fias_data.HOST, timeout=fias_data.TIME_OUT)
 
     # 1. версия
     getUpdateVersion()
     # if IS_DEBUG:
-        # print('Версия: ', fiasData.VERSION_DATE)
+        # print('Версия: ', fias_data.VERSION_DATE)
 
     # 2. загрузка
     # downloadFull()
@@ -32,8 +32,8 @@ def updateAddress(isDebug,address):
     unRarFullAdddr(address)
 
     # 4. маппинг
-    if (es.indices.exists(fiasData.ADDRESS_INDEX)):
-        es.indices.delete(index=fiasData.ADDRESS_INDEX)
+    if (es.indices.exists(fias_data.ADDRESS_INDEX)):
+        es.indices.delete(index=fias_data.ADDRESS_INDEX)
 
     SHARDS_NUMBER = "1"
     ANALYSIS = {
@@ -285,7 +285,7 @@ def updateAddress(isDebug,address):
             }
         }
     }
-    es.indices.create(index=fiasData.ADDRESS_INDEX,
+    es.indices.create(index=fias_data.ADDRESS_INDEX,
                       body={
                           'mappings': {
                               "dynamic": False,
@@ -298,18 +298,18 @@ def updateAddress(isDebug,address):
     address.createPreprocessor(es)
 
     # 7. импорт
-    doc = parse(fiasData.WORK_DIR + address.addressFullXmlFile)
+    doc = parse(fias_data.WORK_DIR + address.addressFullXmlFile)
 
     def importAddress():
         counter = 0
         for event, node in doc:
             if event == pulldom.START_ELEMENT \
-               and node.tagName == fiasData.ADDR_OBJECT_TAG:
+               and node.tagName == fias_data.ADDR_OBJECT_TAG:
                 yield {
-                    "_index": fiasData.ADDRESS_INDEX,
+                    "_index": fias_data.ADDRESS_INDEX,
                     "_type": "_doc",
-                    "_op_type": fiasData.INDEX_OPER,
-                    'pipeline': fiasData.ADDR_PIPELINE_ID,
+                    "_op_type": fias_data.INDEX_OPER,
+                    'pipeline': fias_data.ADDR_PIPELINE_ID,
                     "_id": node.getAttribute("AOID"),
                     "ao_guid": node.getAttribute("AOGUID"),
                     "parent_guid": node.getAttribute("PARENTGUID"),
@@ -343,8 +343,8 @@ def updateAddress(isDebug,address):
                     "oper_status": node.getAttribute("OPERSTATUS"),
                     "start_date": node.getAttribute("STARTDATE"),
                     "end_date": node.getAttribute("ENDDATE"),
-                    "bazis_create_date": fiasData.CREATE_DATE_ZERO,
-                    "bazis_update_date": fiasData.UPDATE_DATE_ZERO,
+                    "bazis_create_date": fias_data.CREATE_DATE_ZERO,
+                    "bazis_update_date": fias_data.UPDATE_DATE_ZERO,
                     "update_date": node.getAttribute("UPDATEDATE"),
                     "bazis_finish_date": node.getAttribute("ENDDATE")
 
@@ -362,7 +362,7 @@ def updateAddress(isDebug,address):
                                        raise_on_exception=False),
                          unit=' адрес',
                          desc=' загружено',
-                         total=fiasData.ADDRESS_COUNT):
+                         total=fias_data.ADDRESS_COUNT):
         if (not ok):
             print(ok, info)
         ADDR_CNT = ADDR_CNT + 1
@@ -372,8 +372,8 @@ def updateAddress(isDebug,address):
 
 
 # 6. снэпшот
-# createSnapshot(repository=fiasData.REPOSITORY,
-               # indexName=fiasData.ADDRESS_INDEX, elasticsearch=es)
+# createSnapshot(repository=fias_data.REPOSITORY,
+               # indexName=fias_data.ADDRESS_INDEX, elasticsearch=es)
 
 # 7. очистка
 # clearWorkDir()

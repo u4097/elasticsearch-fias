@@ -9,10 +9,10 @@ with open(path.join(this_directory, 'README.rst'), encoding='utf-8') as f:
 
 setuptools.setup(
     name="fias-elasticsearch",
-    version="1.4.5",
+    version="1.5.9",
     author="Oleg Sitnikov",
     author_email="oleg.sitnikov@icloud.com",
-    description="Импорт базы данных ФИАС в формате XML в базу Еlasticsearch, с возможностью последующего обновления",
+    description="FIAS Elasticsearch integration",
     long_description=long_description,
     long_description_content_type='text/markdown',
     url="https://github.com/u4097/elasticsearch-fias",

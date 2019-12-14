@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from elasticsearch.client import IngestClient
 from elasticsearch_dsl.connections import connections
-from initDb import createConnection, IS_DEBUG
+from init_db import createConnection, IS_DEBUG
 
 WORK_DIR = '/Volumes/DRIVE120G/downloads/'
 HOST = 'localhost'

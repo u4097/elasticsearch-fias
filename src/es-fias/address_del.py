@@ -11,8 +11,8 @@ from elasticsearch_dsl import Q, Search, Index, Document, Date, Nested, InnerDoc
 # Local modules:
 from fiasDownload import downloadUpdate, uprarFullAdddr
 from fiasInfo import getUpdateVersion
-from fiasData import Address
-from initDb import createConnection
+from fias_data import Address
+from init_db import createConnection
 
 address = Address(workDir='/Volumes/DATA/downloads/',
                   addressIndex='address')

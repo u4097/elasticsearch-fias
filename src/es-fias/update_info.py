@@ -3,7 +3,7 @@
 # Статистика обновления ФИАС
 from elasticsearch_dsl import Q, Search, Index, Document, Date, Nested, Boolean,analyzer, tokenizer, InnerDoc, Completion, Keyword, Text, Integer
 
-import fiasData
+import fias_data
 
 INDEX = 'info'
 
@@ -23,7 +23,7 @@ def findInfoDoc():
     infoDoc = InfoDoc()
     InfoDoc.init()
     s = InfoDoc.search()
-    i = s.query('term', fias_version_date=fiasData.VERSION_REPORT_DATE)
+    i = s.query('term', fias_version_date=fias_data.VERSION_REPORT_DATE)
     infoSearchResult = i.execute(ignore_cache=True)
 
 
@@ -38,7 +38,7 @@ def findInfoDoc():
         # print()
         # print('Документ не найден документ. создаем новый')
         print()
-        infoDoc.fias_version_date = fiasData.VERSION_REPORT_DATE
+        infoDoc.fias_version_date = fias_data.VERSION_REPORT_DATE
         infoDoc.save()
     return infoDoc
 

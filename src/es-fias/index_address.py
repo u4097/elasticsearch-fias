@@ -6,16 +6,16 @@ from elasticsearch_dsl import Index, \
     Document, Date, Nested, InnerDoc, Keyword, Text, Integer, Short, Long, Range
 from elasticsearch_dsl.connections import connections
 
-import fiasData
-from fiasData import ES
+import fias_data
+from fias_data import ES
 
 
 def index(isUpdate=True):
     # 5. Создаем класс для хранения Адресов
-    address = Index(fiasData.ADDRESS_INDEX)
+    address = Index(fias_data.ADDRESS_INDEX)
     address.close()
 
-    houses = Index(fiasData.HOUSE_INDEX)
+    houses = Index(fias_data.HOUSE_INDEX)
     @houses.document
     class House(Document, InnerDoc):
         houseId = Keyword()
@@ -131,8 +131,8 @@ def index(isUpdate=True):
         }
     }
 
-    update_date = str(fiasData.VERSION_DATE) \
-        + fiasData.DATE_TIME_ZONE
+    update_date = str(fias_data.VERSION_DATE) \
+        + fias_data.DATE_TIME_ZONE
 
     queryUpdate = {
         "query": {
@@ -158,7 +158,7 @@ def index(isUpdate=True):
         scanResStreet = scan(ES,
                              scroll='1h',
                              query=queryUpdate,
-                             index=fiasData.ADDRESS_INDEX)
+                             index=fias_data.ADDRESS_INDEX)
         ADDR_UPDATE_CNT = Address.search()\
             .query("term", update_date=update_date)\
             .filter("term", ao_level="7").count()
@@ -166,7 +166,7 @@ def index(isUpdate=True):
         scanResStreet = scan(ES,
                              scroll='1h',
                              query=queryAllStreet,
-                             index=fiasData.ADDRESS_INDEX)
+                             index=fias_data.ADDRESS_INDEX)
 
         ADDR_UPDATE_CNT = Address.search()\
             .query("term", ao_level="7").count()
