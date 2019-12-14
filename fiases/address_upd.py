@@ -24,21 +24,21 @@ def addressUpdate(isDebug, address):
     uprarUpdateAdddr(address)
 
     # 4. обновление
-    rootDeltaXML = etree.parse(fias_data.WORK_DIR
+    rootDeltaXML = etree.parse(fiases.fias_data.WORK_DIR
                                + address.addressDeltaFile).getroot()
     address.addressDeltaRecSize = len(rootDeltaXML.getchildren())
 
-    doc = parse(fias_data.WORK_DIR + address.addressDeltaFile)
+    doc = parse(fiases.fias_data.WORK_DIR + address.addressDeltaFile)
 
     def updateIndex():
         """Обновление индекса"""
         for event, node in doc:
-            if event == pulldom.START_ELEMENT and node.tagName == fias_data.ADDR_OBJECT_TAG:
+            if event == pulldom.START_ELEMENT and node.tagName == fiases.fias_data.ADDR_OBJECT_TAG:
                 yield {
-                    "_index": fias_data.ADDRESS_INDEX,
+                    "_index": fiases.fias_data.ADDRESS_INDEX,
                     "_type": "_doc",
-                    "_op_type": fias_data.INDEX_OPER,
-                    'pipeline': fias_data.ADDR_PIPELINE_ID,
+                    "_op_type": fiases.fias_data.INDEX_OPER,
+                    'pipeline': fiases.fias_data.ADDR_PIPELINE_ID,
                     "_id": node.getAttribute("AOID"),
                     "ao_guid": node.getAttribute("AOGUID"),
                     "parent_guid": node.getAttribute("PARENTGUID"),
@@ -72,8 +72,8 @@ def addressUpdate(isDebug, address):
                     "oper_status": node.getAttribute("OPERSTATUS"),
                     "start_date": node.getAttribute("STARTDATE"),
                     "end_date": node.getAttribute("ENDDATE"),
-                    "bazis_create_date": fias_data.CREATE_DATE_ZERO,
-                    "bazis_update_date": fias_data.VERSION_DATE,
+                    "bazis_create_date": fiases.fias_data.CREATE_DATE_ZERO,
+                    "bazis_update_date": fiases.fias_data.VERSION_DATE,
                     "update_date": node.getAttribute("UPDATEDATE"),
                     "bazis_finish_date": node.getAttribute("ENDDATE")
                 }

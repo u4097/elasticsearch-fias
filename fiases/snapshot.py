@@ -1,5 +1,5 @@
 from elasticsearch.client import SnapshotClient
-from fias_data import ES
+from fiases.fias_data import ES
 import fiases.fias_data
 
 
@@ -31,7 +31,7 @@ def createFullSnapshot(repository):
         pass
 
     sn_body = {
-        "indices": [fias_data.ADDRESS_INDEX, fias_data.HOUSE_INDEX],
+        "indices": [fiases.fias_data.ADDRESS_INDEX, fiases.fias_data.HOUSE_INDEX],
         "ignore_unavailable": "true",
         "include_global_state": "false",
         "metadata": {

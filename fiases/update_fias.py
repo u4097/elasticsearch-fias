@@ -19,13 +19,13 @@ def update(isDebug=False):
     print('обновление...')
     print()
 
-    address = fias_data.Address()
+    address = fiases.fias_data.Address()
     address.createPreprocessor(ES)
     # 1. версия
     getUpdateVersion()
 
     print('версия:')
-    print(fias_data.VERSION_REPORT_DATE)
+    print(fiases.fias_data.VERSION_REPORT_DATE)
     print()
 
     infoDoc = findInfoDoc()
@@ -39,7 +39,7 @@ def update(isDebug=False):
     print()
     print('дома...')
     print()
-    houses = fias_data.Houses()
+    houses = fiases.fias_data.Houses()
     houses.createPreprocessor(ES)
     HOUSE_CNT = housesUpdate(isDebug=True,houses=houses)
     infoDoc.update(rec_upd_houses=HOUSE_CNT)
@@ -58,7 +58,7 @@ def update(isDebug=False):
 
 
     # снэпшот
-    createFullSnapshot(repository=fias_data.REPOSITORY)
+    createFullSnapshot(repository=fiases.fias_data.REPOSITORY)
 
     #  очистка
     clearWorkDir()

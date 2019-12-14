@@ -8,7 +8,7 @@ from elasticsearch.helpers import parallel_bulk
 
 # Local modules:
 from fiases.fias_download import downloadUpdate, uprarUpdateAdddr, clearWorkDir
-import fias_data
+import fiases.fias_data
 from fiases.init_db import createConnection, IS_DEBUG
 from fiases.snapshot import createSnapshot
 from fiases.fias_info import getUpdateVersion
@@ -18,7 +18,7 @@ from fiases.fias_download import downloadFull, unRarFullAdddr
 def updateAddress(isDebug,address):
     # address = fias_data.Address()
     IS_DEBUG = isDebug
-    es = createConnection(host=fias_data.HOST, timeout=fias_data.TIME_OUT)
+    es = createConnection(host=fiases.fias_data.HOST, timeout=fiases.fias_data.TIME_OUT)
 
     # 1. версия
     getUpdateVersion()
@@ -32,8 +32,8 @@ def updateAddress(isDebug,address):
     unRarFullAdddr(address)
 
     # 4. маппинг
-    if (es.indices.exists(fias_data.ADDRESS_INDEX)):
-        es.indices.delete(index=fias_data.ADDRESS_INDEX)
+    if (es.indices.exists(fiases.fias_data.ADDRESS_INDEX)):
+        es.indices.delete(index=fiases.fias_data.ADDRESS_INDEX)
 
     SHARDS_NUMBER = "1"
     ANALYSIS = {
@@ -285,7 +285,7 @@ def updateAddress(isDebug,address):
             }
         }
     }
-    es.indices.create(index=fias_data.ADDRESS_INDEX,
+    es.indices.create(index=fiases.fias_data.ADDRESS_INDEX,
                       body={
                           'mappings': {
                               "dynamic": False,
@@ -298,18 +298,18 @@ def updateAddress(isDebug,address):
     address.createPreprocessor(es)
 
     # 7. импорт
-    doc = parse(fias_data.WORK_DIR + address.addressFullXmlFile)
+    doc = parse(fiases.fias_data.WORK_DIR + address.addressFullXmlFile)
 
     def importAddress():
         counter = 0
         for event, node in doc:
             if event == pulldom.START_ELEMENT \
-               and node.tagName == fias_data.ADDR_OBJECT_TAG:
+               and node.tagName == fiases.fias_data.ADDR_OBJECT_TAG:
                 yield {
-                    "_index": fias_data.ADDRESS_INDEX,
+                    "_index": fiases.fias_data.ADDRESS_INDEX,
                     "_type": "_doc",
-                    "_op_type": fias_data.INDEX_OPER,
-                    'pipeline': fias_data.ADDR_PIPELINE_ID,
+                    "_op_type": fiases.fias_data.INDEX_OPER,
+                    'pipeline': fiases.fias_data.ADDR_PIPELINE_ID,
                     "_id": node.getAttribute("AOID"),
                     "ao_guid": node.getAttribute("AOGUID"),
                     "parent_guid": node.getAttribute("PARENTGUID"),
@@ -343,8 +343,8 @@ def updateAddress(isDebug,address):
                     "oper_status": node.getAttribute("OPERSTATUS"),
                     "start_date": node.getAttribute("STARTDATE"),
                     "end_date": node.getAttribute("ENDDATE"),
-                    "bazis_create_date": fias_data.CREATE_DATE_ZERO,
-                    "bazis_update_date": fias_data.UPDATE_DATE_ZERO,
+                    "bazis_create_date": fiases.fias_data.CREATE_DATE_ZERO,
+                    "bazis_update_date": fiases.fias_data.UPDATE_DATE_ZERO,
                     "update_date": node.getAttribute("UPDATEDATE"),
                     "bazis_finish_date": node.getAttribute("ENDDATE")
 
