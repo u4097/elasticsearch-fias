@@ -9,7 +9,7 @@ from elasticsearch.helpers import scan, parallel_bulk, streaming_bulk
 from elasticsearch_dsl import Q, Search, Index, Document, Date, Nested, InnerDoc, Keyword, Text, Integer, Short, Long, Range
 
 # Local modules:
-from fiases.fias_download import downloadUpdate, uprarFullAdddr
+from fiases.fias_download import  uprarFullAdddr
 from fiases.fias_info import getUpdateVersion
 from fiases.fias_data import Address
 from fiases.init_db import createConnection
@@ -23,28 +23,13 @@ es = Elasticsearch()
 # 1. версия
 getUpdateVersion(address)
 
-# print(address.versionReportDate)
-
-# print(address.URL_FULL)
-
-# 2. загрузка
-# downloadUpdate(
-# address.URL_FULL,
-# address.FIAS_XML_RAR,
-# workDir=address.workDir)
 
 # 3. распаковка
 uprarFullAdddr(address)
 
 
 # 4. удаление
-# HOUSE_XML = "AS_HOUSE_20191205_47755db6-3e03-4424-a7ce-efdac2a5b2d4.XML"
-# ADDR_INFO_DIC['addressFullXmlfile'] = HOUSE_XML
-# print(ADDR_INFO_DIC['workDir'] + HOUSE_XML)
-# print('удаление:')
-# print(address.workDir + address.addressDELFullXMLFile)
 doc = parse(address.workDir + address.addressDELFullXMLFile)
-# doc = parse(ADDR_INFO_DIC['workDir'] + HOUSE_XML)
 
 
 def genFullHouserData():

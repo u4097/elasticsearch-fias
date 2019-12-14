@@ -1,10 +1,18 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+import datetime
+import os
+import sys
+from pathlib import Path
 from elasticsearch.client import IngestClient
 from elasticsearch_dsl.connections import connections
 from fiases.init_db import createConnection, IS_DEBUG
 
-WORK_DIR = '/Volumes/DRIVE120G/downloads/'
+work_dir = str(Path.home()) + '/tmp/'
+if os.path.isfile(work_dir):
+    os.remove(work_dir)
+    os.mkdir(work_dir, 755)
+WORK_DIR = work_dir
 HOST = 'localhost'
 TIME_OUT = 20
 ES = createConnection(host=HOST, timeout=TIME_OUT)
@@ -13,8 +21,9 @@ ADDRESS_INDEX = 'address'
 HOUSE_INDEX = 'houses'
 INDEX_OPER = 'index'
 DELETE_OPER = 'delete'
-CREATE_DATE_ZERO = '2019-12-07T00:00:38Z'
-UPDATE_DATE_ZERO = '2000-01-01T00:00:00Z'
+# CREATE_DATE_ZERO = '2019-12-07T00:00:38Z'
+CREATE_DATE_ZERO = datetime.datetime.now().strftime("%Y-%m-%d") + 'T00:00:00Z'
+UPDATE_DATE_ZERO = datetime.datetime.now().strftime("%Y-%m-%d") + 'T00:00:00Z'
 DATE_TIME_ZONE = 'T00:00:00Z'
 VERSION_DATE = ''
 VERSION_DATE_HOUSE = ''

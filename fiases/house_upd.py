@@ -7,7 +7,7 @@ from xml.dom.pulldom import parse
 from elasticsearch.helpers import parallel_bulk
 
 # Local modules:
-from fiases.fias_download import downloadUpdate, uprarUpdateHouses, clearWorkDir
+from fiases.fias_download import uprarUpdateHouses 
 import fiases.fias_data
 
 

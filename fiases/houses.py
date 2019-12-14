@@ -22,9 +22,7 @@ from elasticsearch_dsl.connections import connections
 ADDRESS_INDEX = 'address_new'
 HOUSE_INDEX = 'houses_new'
 AS_ADDR_FILE = 'AS_ADDROBJ_*'
-UPDATE_DATE_ZERO = '2000-01-01T00:00:00Z'
-CREATE_DATE_ZERO = '2019-12-07T00:00:38Z'
-AS_DEL_ADDR_FILE = 'AS_DEL_ADDROBJ_*'
+aS_DEL_ADDR_FILE = 'AS_DEL_ADDROBJ_*'
 OBJECT_TAG = 'Object'
 PIPELINE_ID = 'addr_drop_pipeline'
 INDEX_OPER = 'index'
@@ -84,62 +82,6 @@ class TqdmUpTo(tqdm):
             self.total = tsize
             self.update(b * bsize - self.n)  # will also set self.n = b * bsize
 
-
-def downloadUpdate(url, file):
-    """ Загрузка полной базы данных ФИАС в формате XML, для начальной инициации базы """
-    print('Начинаем загрузку ...')
-    url = url + file
-    file_name = WORK_DIR + file
-
-    with TqdmUpTo(unit='B',
-                  unit_scale=True,
-                  miniters=1,
-                  desc=url.split('/')[-1]) as t:  # all optional kwargs
-        request.urlretrieve(url,
-                            filename=file_name,
-                            reporthook=t.update_to,
-                            data=None)
-    print('Загрузка завершена.')
-
-
-# 2. загрузка
-# downloadUpdate(FIAS_URL, FIAS_XML_RAR)
-
-def uprarFullAdddr():
-    """ 3.Распаковываем архив с базой и удаленными записями """
-    rf = rarfile.RarFile(WORK_DIR + FIAS_XML_RAR)
-
-    houseMatcher = re.compile(ADDR_INFO_DIC['as_house_file'])
-    houseDelMatcher = re.compile(ADDR_INFO_DIC['as_del_house_file'])
-    print('unrar houses...')
-    for f in rf.infolist():
-        if houseMatcher.match(f.filename):
-            print('FOUND: ' + f.filename)
-            ADDR_INFO_DIC['housesFullXmlFile'] = f.filename
-            ADDR_INFO_DIC['housesFullXmlSize'] = f.file_size
-            print(
-                'size: ' + str(size(ADDR_INFO_DIC['housesFullXmlSize'], system=si)))
-        if houseDelMatcher.match(f.filename):
-            print('FOUND: ' + f.filename)
-            ADDR_INFO_DIC['housesDELFullXMLFile'] = f.filename
-            ADDR_INFO_DIC['housesDELFullXmlSize'] = f.file_size
-            print(
-                'size: ' + str(size(ADDR_INFO_DIC['housesDELFullXmlSize'], system=si)))
-
-    if (ADDR_INFO_DIC['housesFullXmlSize'] > 0):
-        print('1.extracting: ' + ADDR_INFO_DIC['housesFullXmlFile'])
-
-        rf.extract(ADDR_INFO_DIC['housesFullXmlFile'], WORK_DIR)
-        print('2.extracting: ' + ADDR_INFO_DIC['housesDELFullXMLFile'])
-
-        rf.extract(ADDR_INFO_DIC['housesDELFullXMLFile'], WORK_DIR)
-        print('finished')
-    else:
-        print('files NOT FOUND!')
-
-
-# 3. распаковка
-# uprarFullAdddr()
 
 
 # 4. маппинг
@@ -326,9 +268,9 @@ def genFullHouserData():
                 "ao_guid": node.getAttribute("AOGUID"),
                 "region_code": node.getAttribute("REGIONCODE"),
                 "start_date": node.getAttribute("STARTDATE"),
-                "bazis_create_date": CREATE_DATE_ZERO,
+                "bazis_create_date": fiases.fias_data.CREATE_DATE_ZERO,
                 "bazis_finish_date": node.getAttribute("ENDDATE"),
-                "bazis_update_date": UPDATE_DATE_ZERO,
+                "bazis_update_date": fiases.fias_data.UPDATE_DATE_ZERO,
                 "end_date": node.getAttribute("ENDDATE"),
                 "update_date": node.getAttribute("UPDATEDATE"),
                 "div_type": node.getAttribute("DIVTYPE"),

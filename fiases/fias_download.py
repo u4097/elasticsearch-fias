@@ -1,5 +1,4 @@
 import re
-import os
 from urllib import request
 from tqdm import trange, tqdm
 from rarfile import RarFile
@@ -14,7 +13,6 @@ class TqdmUpTo(tqdm):
     def update_full(self, b=6_500_000, bsize=1, tsize=6_500_000):
         if tsize is not None:
             self.total = tsize
-            # will also set self.n = b * bsize
             self.update(b * bsize - self.n)
 
     def update_delta(self, b=100_000, bsize=1, tsize=100_000):
@@ -26,28 +24,17 @@ class TqdmUpTo(tqdm):
 
 def downloadUpdate():
     """ Загрузка обновления ФИАС """
-    # if IS_DEBUG:
-        # print('Начинаем загрузку ...')
-        # print(fias_data.URL_DELTA)
     file_name = fiases.fias_data.WORK_DIR + fiases.fias_data.FIAS_DELTA_XML_RAR
 
-    with TqdmUpTo(unit='B',
-                  unit_scale=True,
-                  miniters=1,
-                  desc=fiases.fias_data.URL_DELTA.split('/')[-1]) as t:  # all optional kwargs
-        request.urlretrieve(fiases.fias_data.URL_DELTA,
-                            filename=file_name,
-                            reporthook=t.update_delta,
-                            data=None)
-    # if IS_DEBUG:
-        # print('Загрузка завершена.')
+    request.urlretrieve(fiases.fias_data.URL_DELTA, filename=file_name)
+
 
 
 def downloadFull():
     """ Загрузка полной базы ФИАС """
     # if IS_DEBUG:
-        # print('Начинаем загрузку ...')
-        # print(fias_data.URL_FULL)
+    # print('Начинаем загрузку ...')
+    # print(fias_data.URL_FULL)
     file_name = fiases.fias_data.WORK_DIR + fiases.fias_data.FIAS_XML_RAR
 
     with TqdmUpTo(unit='B',
@@ -64,11 +51,12 @@ def downloadFull():
 
 def uprarUpdateAdddr(address):
     """Распаковка обновления """
-    rf = RarFile(fiases.fias_data.WORK_DIR + fiases.fias_data.FIAS_DELTA_XML_RAR)
+    rf = RarFile(fiases.fias_data.WORK_DIR +
+                 fiases.fias_data.FIAS_DELTA_XML_RAR)
 
     addressMatcher = re.compile(fiases.fias_data.AS_ADDR_FILE)
     # if IS_DEBUG:
-        # print('unrar address...')
+    # print('unrar address...')
     for f in rf.infolist():
         if addressMatcher.match(f.filename):
             # if IS_DEBUG:
@@ -76,8 +64,8 @@ def uprarUpdateAdddr(address):
             address.addressDeltaFile = f.filename
             address.addressDeltaSize = f.file_size
             # if IS_DEBUG:
-                # print(
-                    # 'size: ' + str(size(address.addressDeltaSize, system=si)))
+            # print(
+            # 'size: ' + str(size(address.addressDeltaSize, system=si)))
 
     if (address.addressDeltaSize > 0):
         if IS_DEBUG:
@@ -93,7 +81,8 @@ def uprarUpdateAdddr(address):
 
 def uprarUpdateHouses(houses):
     """Распаковка обновления """
-    rf = RarFile(fiases.fias_data.WORK_DIR + fiases.fias_data.FIAS_DELTA_XML_RAR)
+    rf = RarFile(fiases.fias_data.WORK_DIR +
+                 fiases.fias_data.FIAS_DELTA_XML_RAR)
 
     housesMatcher = re.compile(fiases.fias_data.AS_HOUSES_FILE)
     if IS_DEBUG:
@@ -181,11 +170,14 @@ def unRarFullAdddr(address):
 
 def clearWorkDir():
     """Очистка рабочей директории от ранее загруженных файлов"""
-    for the_file in os.listdir(fiases.fias_data.WORK_DIR):
-        file_path = os.path.join(fiases.fias_data.WORK_DIR, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            if IS_DEBUG:
-                print(e)
+    # home = str(Path.home()) + '/tmp'
+    # shutil.rmtree(fiases.fias_data.WORK_DIR, ignore_errors=True)
+    # os.rmdir(home)
+    # for the_file in os.listdir(fiases.fias_data.WORK_DIR):
+    # file_path = os.path.join(fiases.fias_data.WORK_DIR, the_file)
+    # try:
+    # if os.path.isfile(file_path):
+    # os.unlink(file_path)
+    # except Exception as e:
+    # if IS_DEBUG:
+    # print(e)

@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
+import os
+import sys
 import fiases.fias_data
 from fiases.fias_data import Address
 from fiases.fias_info import getUpdateVersion
@@ -32,7 +34,7 @@ def update(isDebug=False):
 
     now = datetime.datetime.now()
     infoDoc.update(update_date=now)
-    
+
     # 2. загрузка
     downloadUpdate()
 
@@ -41,13 +43,13 @@ def update(isDebug=False):
     print()
     houses = fiases.fias_data.Houses()
     houses.createPreprocessor(ES)
-    HOUSE_CNT = housesUpdate(isDebug=True,houses=houses)
+    HOUSE_CNT = housesUpdate(isDebug=True, houses=houses)
     infoDoc.update(rec_upd_houses=HOUSE_CNT)
 
     print()
     print('адреса...')
     print()
-    ADDR_CNT = addressUpdate(isDebug=True,address=address)
+    ADDR_CNT = addressUpdate(isDebug=True, address=address)
     infoDoc.update(rec_upd_address=ADDR_CNT)
 
     print()
@@ -55,7 +57,6 @@ def update(isDebug=False):
     print()
 
     index(isUpdate=True)
-
 
     # снэпшот
     createFullSnapshot(repository=fiases.fias_data.REPOSITORY)
@@ -68,4 +69,3 @@ def update(isDebug=False):
 
 update(isDebug=True)
 # index(isUpdate=False)
-# createFullSnapshot(repository=fias_data.REPOSITORY)

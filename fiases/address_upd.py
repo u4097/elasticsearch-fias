@@ -9,7 +9,7 @@ from elasticsearch_dsl import Search
 
 # Local modules:
 import fiases.fias_data
-from fiases.fias_download import downloadUpdate, uprarUpdateAdddr, clearWorkDir
+from fiases.fias_download import uprarUpdateAdddr 
 from fiases.fias_info import getUpdateVersion
 from fiases.snapshot import createSnapshot
 from fiases.update_info import findInfoDoc
