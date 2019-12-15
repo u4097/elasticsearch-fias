@@ -8,21 +8,16 @@ from elasticsearch.helpers import parallel_bulk
 
 # Local modules:
 import fiases.fias_data
-from fiases.init_db import createConnection, IS_DEBUG
-from fiases.snapshot import createSnapshot
+from fiases.fias_data import ES
+from fiases.index_address import createIndex
 from fiases.fias_info import getUpdateVersion
 from fiases.fias_download import downloadFull, unRarFullAdddr
 
 
-def updateAddress(isDebug,address):
-    # address = fias_data.Address()
-    IS_DEBUG = isDebug
-    es = createConnection(host=fiases.fias_data.HOST, timeout=fiases.fias_data.TIME_OUT)
+def import_address(address):
 
     # 1. версия
     getUpdateVersion()
-    # if IS_DEBUG:
-        # print('Версия: ', fias_data.VERSION_DATE)
 
     # 2. загрузка
     # downloadFull()
@@ -31,8 +26,8 @@ def updateAddress(isDebug,address):
     unRarFullAdddr(address)
 
     # 4. маппинг
-    if (es.indices.exists(fiases.fias_data.ADDRESS_INDEX)):
-        es.indices.delete(index=fiases.fias_data.ADDRESS_INDEX)
+    if (ES.indices.exists(fiases.fias_data.ADDRESS_INDEX)):
+        ES.indices.delete(index=fiases.fias_data.ADDRESS_INDEX)
 
     SHARDS_NUMBER = "1"
     ANALYSIS = {
@@ -284,7 +279,7 @@ def updateAddress(isDebug,address):
             }
         }
     }
-    es.indices.create(index=fiases.fias_data.ADDRESS_INDEX,
+    ES.indices.create(index=fiases.fias_data.ADDRESS_INDEX,
                       body={
                           'mappings': {
                               "dynamic": False,
@@ -294,12 +289,12 @@ def updateAddress(isDebug,address):
                       })
 
     # 6. препроцессор
-    address.createPreprocessor(es)
+    address.createPreprocessor(ES)
 
     # 7. импорт
     doc = parse(fiases.fias_data.WORK_DIR + address.addressFullXmlFile)
 
-    def importAddress():
+    def importFull():
         counter = 0
         for event, node in doc:
             if event == pulldom.START_ELEMENT \
@@ -349,33 +344,20 @@ def updateAddress(isDebug,address):
 
                 }
 
-    # if IS_DEBUG:
-        # print("Загрузка...")
-        # print()
-        # print(address.addressFullXmlFile)
-        # print()
     ADDR_CNT = 0
-    for ok, info in tqdm(parallel_bulk(es,
-                                       importAddress(),
+    for ok, info in tqdm(parallel_bulk(ES,
+                                       importFull(),
                                        raise_on_error=False,
                                        raise_on_exception=False),
                          unit=' адрес',
                          desc=' загружено',
-                         total=fias_data.ADDRESS_COUNT):
+                         total=fiases.fias_data.ADDRESS_COUNT):
         if (not ok):
             print(ok, info)
         ADDR_CNT = ADDR_CNT + 1
-    # if IS_DEBUG:
-        # print()
-        # print('Загружено: ', ADDR_CNT, ' записей.')
+
+    createIndex(isUpdate=False)
 
 
-# 6. снэпшот
-# createSnapshot(repository=fias_data.REPOSITORY,
-               # indexName=fias_data.ADDRESS_INDEX, elasticsearch=es)
-
-# 7. очистка
-# clearWorkDir()
-
-
-# updateAddress(isDebug=True)
+# address = fiases.fias_data.Address()
+# import_address(address=address)

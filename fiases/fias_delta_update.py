@@ -1,18 +1,17 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-import datetime
 import os
 import sys
+import datetime
 import fiases.fias_data
 from fiases.fias_data import Address
 from fiases.fias_info import getUpdateVersion
 from fiases.address_upd import addressUpdate
 from fiases.house_upd import housesUpdate
 from fiases.update_info import findInfoDoc
-from fiases.init_db import createConnection, IS_DEBUG
-from fiases.fias_download import downloadUpdate, clearWorkDir
-from fiases.index_address import index
-from fiases.snapshot import createSnapshot, createFullSnapshot
+from fiases.fias_download import downloadUpdate 
+from fiases.index_address import createIndex
+from fiases.snapshot import  createFullSnapshot
 from fiases.fias_data import ES
 
 
@@ -22,7 +21,7 @@ def update(isDebug=False):
     print()
 
     address = fiases.fias_data.Address()
-    address.createPreprocessor(ES)
+    address.createPreprocessor()
     # 1. версия
     getUpdateVersion()
 
@@ -42,7 +41,7 @@ def update(isDebug=False):
     print('дома...')
     print()
     houses = fiases.fias_data.Houses()
-    houses.createPreprocessor(ES)
+    houses.createPreprocessor()
     HOUSE_CNT = housesUpdate(isDebug=True, houses=houses)
     infoDoc.update(rec_upd_houses=HOUSE_CNT)
 
@@ -56,16 +55,13 @@ def update(isDebug=False):
     print('индексация...')
     print()
 
-    index(isUpdate=True)
+    createIndex(isUpdate=True)
 
     # снэпшот
-    createFullSnapshot(repository=fiases.fias_data.REPOSITORY)
+    createFullSnapshot()
 
-    #  очистка
-    clearWorkDir()
 
     print("завершено")
 
 
-update(isDebug=True)
-# index(isUpdate=False)
+# update(isDebug=True)

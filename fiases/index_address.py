@@ -2,15 +2,15 @@
 # -*- coding: utf-8 -*-
 from tqdm import tqdm
 from elasticsearch.helpers import scan
+from elasticsearch.client import IndicesClient
 from elasticsearch_dsl import Index, \
     Document, Date, Nested, InnerDoc, Keyword, Text, Integer, Short, Long, Range
-from elasticsearch_dsl.connections import connections
 
 import fiases.fias_data
 from fiases.fias_data import ES
 
 
-def index(isUpdate=True):
+def createIndex(isUpdate=True):
     # 5. Создаем класс для хранения Адресов
     address = Index(fiases.fias_data.ADDRESS_INDEX)
     address.close()
@@ -212,7 +212,6 @@ def index(isUpdate=True):
         else:
             houses = homeSearch.filter("term", ao_guid=street.ao_guid)
             for house in houses.execute():
-                # print(house.to_dict())
                 houseList.append(house)
         try:
             if (street.postal_code):
@@ -228,7 +227,7 @@ def index(isUpdate=True):
                           street_address_suggest=district.off_name.lower().strip()
                           + " " + city.off_name.lower().strip()
                           + " " + street.off_name.lower().strip(),
-                          full_address=postal_code 
+                          full_address=postal_code
                           + district.short_name
                           + ' ' + district.off_name + ', '
                           + city.short_name + ' ' + city.off_name + ', '
@@ -239,6 +238,9 @@ def index(isUpdate=True):
         except(Exception):
             print(house)
 
+    IndicesClient(ES).refresh()
+    IndicesClient(ES).flush()
+    IndicesClient(ES).forcemerge()
 
 
-# index(isUpdate=True)
+# createIndex(isUpdate=True)

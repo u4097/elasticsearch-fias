@@ -1,30 +1,42 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-import datetime
 import os
 import sys
+import shutil
+import datetime
 from pathlib import Path
 from elasticsearch.client import IngestClient
-from elasticsearch_dsl.connections import connections
-from fiases.init_db import createConnection, IS_DEBUG
+from fiases.init_db import createConnection
 
-work_dir = str(Path.home()) + '/tmp/'
-if os.path.isfile(work_dir):
-    os.remove(work_dir)
-    os.mkdir(work_dir, 755)
-WORK_DIR = work_dir
+
+def createTmpDir():
+    TMPDIR = '/tmp/'
+    WRITE_MODE = 0o777
+    work_dir = str(Path.home()) + TMPDIR
+    if os.path.isdir(work_dir):
+        shutil.rmtree(work_dir, ignore_errors=True)
+    os.makedirs(work_dir, mode=WRITE_MODE, exist_ok=False)
+    return work_dir
+
+
+DATE_TIME_ZONE = 'T00:00:00Z'
+def getDateNow():
+    return datetime.datetime.now().strftime("%Y-%m-%d") + DATE_TIME_ZONE
+
+
+WORK_DIR = createTmpDir()
+
+ADDRESS_INDEX = 'address'
+HOUSE_INDEX = 'houses'
 HOST = 'localhost'
 TIME_OUT = 20
 ES = createConnection(host=HOST, timeout=TIME_OUT)
 REPOSITORY = 'fias'
-ADDRESS_INDEX = 'address'
-HOUSE_INDEX = 'houses'
+INFO_INDEX = 'info'
 INDEX_OPER = 'index'
 DELETE_OPER = 'delete'
-# CREATE_DATE_ZERO = '2019-12-07T00:00:38Z'
-CREATE_DATE_ZERO = datetime.datetime.now().strftime("%Y-%m-%d") + 'T00:00:00Z'
-UPDATE_DATE_ZERO = datetime.datetime.now().strftime("%Y-%m-%d") + 'T00:00:00Z'
-DATE_TIME_ZONE = 'T00:00:00Z'
+CREATE_DATE_ZERO = getDateNow()
+UPDATE_DATE_ZERO = getDateNow()
 VERSION_DATE = ''
 VERSION_DATE_HOUSE = ''
 VERSION_REPORT_DATE = ''
@@ -61,7 +73,7 @@ class Address:
     addressDeltaSize = 0
     addressDeltaRecSize = 0
 
-    def createPreprocessor(self, es):
+    def createPreprocessor(self):
         dropPipeline = {
             "description":
             "drop not actulal addresses",
@@ -79,7 +91,7 @@ class Address:
                 }
             }]
         }
-        IngestClient(es).put_pipeline(id=ADDR_PIPELINE_ID,
+        IngestClient(ES).put_pipeline(id=ADDR_PIPELINE_ID,
                                       body=dropPipeline)
 
 
@@ -95,7 +107,7 @@ class Houses:
     housesDeltaSize = 0
     housesDeltaRecSize = 0
 
-    def createPreprocessor(self, es):
+    def createPreprocessor(self):
         dropPipeline = {
             "description": "drop old houses",
             "processors": [
@@ -121,5 +133,5 @@ class Houses:
                 }
             ]
         }
-        IngestClient(es).put_pipeline(id=HOUSES_PIPELINE_ID,
+        IngestClient(ES).put_pipeline(id=HOUSES_PIPELINE_ID,
                                       body=dropPipeline)

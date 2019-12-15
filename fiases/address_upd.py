@@ -11,7 +11,6 @@ from elasticsearch_dsl import Search
 import fiases.fias_data
 from fiases.fias_download import uprarUpdateAdddr 
 from fiases.fias_info import getUpdateVersion
-from fiases.snapshot import createSnapshot
 from fiases.update_info import findInfoDoc
 from fiases.fias_data import ES
 

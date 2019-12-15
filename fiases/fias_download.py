@@ -1,9 +1,8 @@
 import re
 from urllib import request
-from tqdm import trange, tqdm
+from tqdm import tqdm
 from rarfile import RarFile
 from hurry.filesize import size, si
-from fiases.init_db import IS_DEBUG
 import fiases.fias_data
 
 
@@ -29,12 +28,8 @@ def downloadUpdate():
     request.urlretrieve(fiases.fias_data.URL_DELTA, filename=file_name)
 
 
-
 def downloadFull():
     """ Загрузка полной базы ФИАС """
-    # if IS_DEBUG:
-    # print('Начинаем загрузку ...')
-    # print(fias_data.URL_FULL)
     file_name = fiases.fias_data.WORK_DIR + fiases.fias_data.FIAS_XML_RAR
 
     with TqdmUpTo(unit='B',
@@ -45,8 +40,6 @@ def downloadFull():
                             filename=file_name,
                             reporthook=t.update_full,
                             data=None)
-    if IS_DEBUG:
-        print('Загрузка завершена.')
 
 
 def uprarUpdateAdddr(address):
@@ -55,28 +48,13 @@ def uprarUpdateAdddr(address):
                  fiases.fias_data.FIAS_DELTA_XML_RAR)
 
     addressMatcher = re.compile(fiases.fias_data.AS_ADDR_FILE)
-    # if IS_DEBUG:
-    # print('unrar address...')
     for f in rf.infolist():
         if addressMatcher.match(f.filename):
-            # if IS_DEBUG:
-                # print('FOUND: ' + f.filename)
             address.addressDeltaFile = f.filename
             address.addressDeltaSize = f.file_size
-            # if IS_DEBUG:
-            # print(
-            # 'size: ' + str(size(address.addressDeltaSize, system=si)))
 
     if (address.addressDeltaSize > 0):
-        if IS_DEBUG:
-            print('extracting: ' + address.addressDeltaFile)
-
         rf.extract(address.addressDeltaFile, fiases.fias_data.WORK_DIR)
-        if IS_DEBUG:
-            print('finished')
-    else:
-        if IS_DEBUG:
-            print('files NOT FOUND!')
 
 
 def uprarUpdateHouses(houses):
@@ -85,28 +63,16 @@ def uprarUpdateHouses(houses):
                  fiases.fias_data.FIAS_DELTA_XML_RAR)
 
     housesMatcher = re.compile(fiases.fias_data.AS_HOUSES_FILE)
-    if IS_DEBUG:
-        print('unrar houses...')
     for f in rf.infolist():
         if housesMatcher.match(f.filename):
-            if IS_DEBUG:
-                print('FOUND: ' + f.filename)
             houses.housesDeltaFile = f.filename
             houses.housesDeltaSize = f.file_size
-            if IS_DEBUG:
-                print(
-                    'size: ' + str(size(houses.housesDeltaSize, system=si)))
 
     if (houses.housesDeltaSize > 0):
-        if IS_DEBUG:
-            print('2.extracting: ' + houses.housesDeltaFile)
 
         rf.extract(houses.housesDeltaFile, fiases.fias_data.WORK_DIR)
-        if IS_DEBUG:
-            print('finished')
     else:
-        if IS_DEBUG:
-            print('files NOT FOUND!')
+        print('files NOT FOUND!')
 
 
 def uprarDelFullAdddr(address):
@@ -116,28 +82,13 @@ def uprarDelFullAdddr(address):
 
     addressMatcher = re.compile(fiases.fias_data.AS_ADDR_FILE)
     addressDelMatcher = re.compile(fiases.fias_data.AS_DEL_ADDR_FILE)
-    if IS_DEBUG:
-        print('unrar address...')
     for f in rf.infolist():
         if addressDelMatcher.match(f.filename):
-            if IS_DEBUG:
-                print('FOUND: ' + f.filename)
             address.addressDELFullXMLFile = f.filename
             address.addressDELFullXmlSize = f.file_size
-            if IS_DEBUG:
-                print(
-                    'size: ' + str(size(address.addressFullXmlSize, system=si)))
 
     if (address.addressDELFullXmlSize > 0):
-        if IS_DEBUG:
-            print('2.extracting: ' + address.addressDELFullXMLFile)
-
         rf.extract(address.addressDELFullXMLFile, fiases.fias_data.WORK_DIR)
-        if IS_DEBUG:
-            print('finished')
-    else:
-        if IS_DEBUG:
-            print('files NOT FOUND!')
 
 
 def unRarFullAdddr(address):
@@ -148,36 +99,20 @@ def unRarFullAdddr(address):
     print('')
     for f in rf.infolist():
         if addressMatcher.match(f.filename):
-            if IS_DEBUG:
-                print('Найден: ' + f.filename)
             address.addressFullXmlFile = f.filename
             address.addressFullXmlSize = f.file_size
-            if IS_DEBUG:
-                print(
-                    'Размер: ' + str(size(f.file_size, system=si)))
     if (address.addressFullXmlSize > 0):
-        if IS_DEBUG:
-            print('Распаковка: ',  address.addressFullXmlFile)
-
         rf.extract(address.addressFullXmlFile, fiases.fias_data.WORK_DIR)
 
-        if IS_DEBUG:
-            print('Ok')
+def unRarFullHouses(houses):
+    """Распаковка домов из полной базы ФИАС"""
+    rf = RarFile(fiases.fias_data.WORK_DIR + fiases.fias_data.FIAS_XML_RAR)
+    housesMatcher = re.compile(fiases.fias_data.AS_HOUSES_FILE)
+    for f in rf.infolist():
+        if housesMatcher.match(f.filename):
+            houses.housesFullXmlFile = f.filename
+            houses.housesFullXmlSize = f.file_size
+    if (houses.housesFullXmlSize > 0):
+        rf.extract(houses.housesFullXmlFile, fiases.fias_data.WORK_DIR)
     else:
-        if IS_DEBUG:
-            print('Файлы не найдены')
-
-
-def clearWorkDir():
-    """Очистка рабочей директории от ранее загруженных файлов"""
-    # home = str(Path.home()) + '/tmp'
-    # shutil.rmtree(fiases.fias_data.WORK_DIR, ignore_errors=True)
-    # os.rmdir(home)
-    # for the_file in os.listdir(fiases.fias_data.WORK_DIR):
-    # file_path = os.path.join(fiases.fias_data.WORK_DIR, the_file)
-    # try:
-    # if os.path.isfile(file_path):
-    # os.unlink(file_path)
-    # except Exception as e:
-    # if IS_DEBUG:
-    # print(e)
+        print('Файлы не найдены')

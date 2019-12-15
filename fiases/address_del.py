@@ -121,5 +121,3 @@ sn_body = {
 # print(sn.get(repository="fias", snapshot="houses"))
 
 
-# 7. очистка
-# clearWorkDir()
