@@ -57,8 +57,6 @@ def update(isDebug=False):
 
     createIndex(isUpdate=True)
 
-    # снэпшот
-    createFullSnapshot()
 
 
     print("завершено")

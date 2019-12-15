@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from tqdm import tqdm
 from elasticsearch.helpers import scan
-from elasticsearch.client import IndicesClient
 from elasticsearch_dsl import Index, \
     Document, Date, Nested, InnerDoc, Keyword, Text, Integer, Short, Long, Range
 
@@ -238,9 +237,6 @@ def createIndex(isUpdate=True):
         except(Exception):
             print(house)
 
-    IndicesClient(ES).refresh()
-    IndicesClient(ES).flush()
-    IndicesClient(ES).forcemerge()
 
 
 # createIndex(isUpdate=True)

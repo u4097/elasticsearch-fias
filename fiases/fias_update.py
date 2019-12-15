@@ -1,9 +1,10 @@
 import fiases.fias_data
 from fiases.address import import_address
 from fiases.houses import import_houses
-from fias_delta_update import update
+from fiases.fias_delta_update import update
 from fiases.fias_data import ES
-from snapshot import createFullSnapshot
+from fiases.snapshot import createFullSnapshot
+from elasticsearch.client import IndicesClient
 
 
 def importFull():
@@ -19,7 +20,10 @@ def updateFias():
         importFull()
     else:
         update(isDebug=True)
+    createFullSnapshot()
+    IndicesClient(ES).refresh()
+    IndicesClient(ES).flush()
+    IndicesClient(ES).forcemerge()
 
 
-updateFias()
-createFullSnapshot()
+# updateFias()
