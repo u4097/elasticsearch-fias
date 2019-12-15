@@ -289,7 +289,7 @@ def import_address(address):
                       })
 
     # 6. препроцессор
-    address.createPreprocessor(ES)
+    address.createPreprocessor()
 
     # 7. импорт
     doc = parse(fiases.fias_data.WORK_DIR + address.addressFullXmlFile)

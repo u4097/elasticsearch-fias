@@ -210,7 +210,7 @@ def createIndex(isUpdate=True):
             continue
         else:
             houses = homeSearch.filter("term", ao_guid=street.ao_guid)
-            for house in houses.execute():
+            for house in houses.scan():
                 houseList.append(house)
         try:
             if (street.postal_code):
