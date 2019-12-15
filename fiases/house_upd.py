@@ -7,7 +7,7 @@ from xml.dom.pulldom import parse
 from elasticsearch.helpers import parallel_bulk
 
 # Local modules:
-from fiases.fias_download import uprarUpdateHouses 
+from fiases.fias_download import uprarUpdateHouses
 import fiases.fias_data
 
 
@@ -61,7 +61,7 @@ def housesUpdate(isDebug, houses):
                     "bazis_finish_date": node.getAttribute("ENDDATE")
                 }
 
-    ADDR_CNT = 0
+    # ADDR_CNT = 0
     if IS_DEBUG:
         for ok, info in tqdm(parallel_bulk(fiases.fias_data.ES, updateIndex(),
                                            raise_on_error=False,
@@ -69,7 +69,7 @@ def housesUpdate(isDebug, houses):
                              unit=' дом',
                              desc='обновлено',
                              total=houses.housesDeltaRecSize):
-            ADDR_CNT = ADDR_CNT + 1
+            # ADDR_CNT = ADDR_CNT + 1
             if (not ok):
                 if IS_DEBUG:
                     print(ok, info)
@@ -78,12 +78,11 @@ def housesUpdate(isDebug, houses):
         for ok, info in parallel_bulk(fiases.fias_data.ES, updateIndex(),
                                       raise_on_error=False,
                                       raise_on_exception=False):
-            ADDR_CNT = ADDR_CNT + 1
+            # ADDR_CNT = ADDR_CNT + 1
             if (not ok):
                 print(ok, info)
 
-    # return houses.housesDeltaRecSize
-    return  ADDR_CNT
+    return houses.housesDeltaRecSize
 
 
 # housesUpdate(isDebug=True)

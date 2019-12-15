@@ -9,7 +9,7 @@ from elasticsearch_dsl import Search
 
 # Local modules:
 import fiases.fias_data
-from fiases.fias_download import uprarUpdateAdddr 
+from fiases.fias_download import uprarUpdateAdddr
 from fiases.fias_info import getUpdateVersion
 from fiases.update_info import findInfoDoc
 from fiases.fias_data import ES
@@ -77,7 +77,6 @@ def addressUpdate(isDebug, address):
                     "bazis_finish_date": node.getAttribute("ENDDATE")
                 }
 
-    ADDR_CNT = 0
     if IS_DEBUG:
         for ok, info in tqdm(parallel_bulk(ES, updateIndex(),
                                            raise_on_error=False,
@@ -85,7 +84,6 @@ def addressUpdate(isDebug, address):
                              unit=' адрес',
                              desc='обновлено',
                              total=address.addressDeltaRecSize):
-            ADDR_CNT = ADDR_CNT + 1
             if (not ok):
                 if IS_DEBUG:
                     print(ok, info)
@@ -94,12 +92,10 @@ def addressUpdate(isDebug, address):
         for ok, info in parallel_bulk(ES, updateIndex(),
                                       raise_on_error=False,
                                       raise_on_exception=False):
-            ADDR_CNT = ADDR_CNT + 1
             if (not ok):
                 print(ok, info)
 
-    # return address.addressDeltaRecSize
-    return ADDR_CNT
+    return address.addressDeltaRecSize
 
 
 # addressUpdate(isDebug=True)
