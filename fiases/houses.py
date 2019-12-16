@@ -17,6 +17,8 @@ from fiases.fias_download import downloadFull, unRarFullHouses
 
 def import_houses(houses):
 
+    fiases.fias_data.createTmpDir()
+
     # 1. версия
     getUpdateVersion()
 

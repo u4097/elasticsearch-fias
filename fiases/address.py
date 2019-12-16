@@ -15,12 +15,13 @@ from fiases.fias_download import downloadFull, unRarFullAdddr
 
 
 def import_address(address):
+    fiases.fias_data.createTmpDir()
 
     # 1. версия
     getUpdateVersion()
 
     # 2. загрузка
-    # downloadFull()
+    downloadFull()
 
     # 3. распаковка
     unRarFullAdddr(address)

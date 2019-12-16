@@ -24,6 +24,7 @@ def updateFias():
         update(isDebug=True)
     createFullSnapshot()
     refreshIndex()
+    fiases.fias_data.createTmpDir();
 
 
 def refreshIndex():
