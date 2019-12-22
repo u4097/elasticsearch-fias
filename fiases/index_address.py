@@ -154,6 +154,7 @@ def createIndex(isUpdate=True):
 
     # Выбираем все улицы
     if isUpdate:
+        print("indexing ...")
         scanResStreet = scan(ES,
                              scroll='1h',
                              query=queryUpdate,
@@ -162,6 +163,7 @@ def createIndex(isUpdate=True):
             .query("term", update_date=update_date)\
             .filter("term", ao_level="7").count()
     else:
+        print("Full indexing ...")
         scanResStreet = scan(ES,
                              scroll='1h',
                              query=queryAllStreet,
@@ -170,14 +172,17 @@ def createIndex(isUpdate=True):
         ADDR_UPDATE_CNT = Address.search()\
             .query("term", ao_level="7").count()
 
+    print("ADDR_UPDATE_CNT: ", ADDR_UPDATE_CNT)
     # Обновляем индеск street_address_suggest
     addrSearch = Address.search()
     homeSearch = House.search()
 
+    print("address: ", Address.search().count())
+    print("houses: ", House.search().count())
     houseList = []
     for address in tqdm(scanResStreet,
-                        unit=' адрес',
-                        desc='индексировано',
+                        unit=' address',
+                        desc='indexed',
                         total=ADDR_UPDATE_CNT):
         # source = address['_source']
         # Получаем улицу
@@ -236,6 +241,8 @@ def createIndex(isUpdate=True):
             houseList[:] = []
         except(Exception):
             print(house)
+    return ADDR_UPDATE_CNT
+    print("finish")
 
 
 

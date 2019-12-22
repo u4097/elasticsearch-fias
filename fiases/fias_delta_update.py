@@ -17,7 +17,7 @@ from fiases.fias_data import ES
 
 def update(isDebug=False):
     print()
-    print('обновление...')
+    print('update...')
     print()
 
     address = fiases.fias_data.Address()
@@ -25,7 +25,7 @@ def update(isDebug=False):
     # 1. версия
     getUpdateVersion()
 
-    print('версия:')
+    print('vesion:')
     print(fiases.fias_data.VERSION_REPORT_DATE)
     print()
 
@@ -38,7 +38,7 @@ def update(isDebug=False):
     downloadUpdate()
 
     print()
-    print('дома...')
+    print('hoses...')
     print()
     houses = fiases.fias_data.Houses()
     houses.createPreprocessor()
@@ -46,20 +46,21 @@ def update(isDebug=False):
     infoDoc.update(rec_upd_houses=HOUSE_CNT)
 
     print()
-    print('адреса...')
+    print('address...')
     print()
     ADDR_CNT = addressUpdate(isDebug=True, address=address)
     infoDoc.update(rec_upd_address=ADDR_CNT)
 
     print()
-    print('индексация...')
+    print('index...')
     print()
 
-    createIndex(isUpdate=True)
+    ADDR_UPDATE_CNT = createIndex(isUpdate=True)
 
 
 
-    print("завершено")
+    print("finish")
+    return ADDR_UPDATE_CNT
 
 
 # update(isDebug=True)

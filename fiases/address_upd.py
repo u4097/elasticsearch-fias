@@ -81,8 +81,8 @@ def addressUpdate(isDebug, address):
         for ok, info in tqdm(parallel_bulk(ES, updateIndex(),
                                            raise_on_error=False,
                                            raise_on_exception=False),
-                             unit=' адрес',
-                             desc='обновлено',
+                             unit=' address',
+                             desc='updated',
                              total=address.addressDeltaRecSize):
             if (not ok):
                 if IS_DEBUG:

@@ -6,7 +6,9 @@ import shutil
 import datetime
 from pathlib import Path
 from elasticsearch.client import IngestClient
+from elasticsearch import Elasticsearch, RequestsHttpConnection
 from fiases.init_db import createConnection
+from elasticsearch_dsl.connections import connections
 
 
 def createTmpDir():
@@ -28,9 +30,12 @@ WORK_DIR = createTmpDir()
 
 ADDRESS_INDEX = 'address'
 HOUSE_INDEX = 'houses'
-HOST = 'localhost'
-TIME_OUT = 20
-ES = createConnection(host=HOST, timeout=TIME_OUT)
+HOST = 'es01'
+TIME_OUT = 2000
+ES = Elasticsearch(host='es01',port=9200, timeout=20000, connection_class=RequestsHttpConnection)
+connections.configure(
+    default={'hosts': 'es01'},
+)
 REPOSITORY = 'fias'
 INFO_INDEX = 'info'
 INDEX_OPER = 'index'
@@ -40,13 +45,13 @@ UPDATE_DATE_ZERO = getDateNow()
 VERSION_DATE = ''
 VERSION_DATE_HOUSE = ''
 VERSION_REPORT_DATE = ''
-ADDRESS_COUNT = 4_000_000
+ADDRESS_COUNT = 4000000
 AS_ADDR_FILE = 'AS_ADDROBJ_*'
 AS_DEL_ADDR_FILE = 'AS_DEL_ADDROBJ_*'
 ADDR_OBJECT_TAG = 'Object'
 ADDR_PIPELINE_ID = 'addr_drop_pipeline'
 
-HOUSES_COUNT = 70_000_000
+HOUSES_COUNT = 70000000
 AS_HOUSES_FILE = 'AS_HOUSE_*'
 AS_DEL_HOUSES_FILE = 'AS_DEL_HOUSE_*'
 HOUSES_OBJECT_TAG = 'House'

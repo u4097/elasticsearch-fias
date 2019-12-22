@@ -66,8 +66,8 @@ def housesUpdate(isDebug, houses):
         for ok, info in tqdm(parallel_bulk(fiases.fias_data.ES, updateIndex(),
                                            raise_on_error=False,
                                            raise_on_exception=False),
-                             unit=' дом',
-                             desc='обновлено',
+                             unit=' house',
+                             desc='updated',
                              total=houses.housesDeltaRecSize):
             # ADDR_CNT = ADDR_CNT + 1
             if (not ok):

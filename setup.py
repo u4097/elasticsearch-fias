@@ -9,7 +9,7 @@ with open(path.join(this_directory, 'README.rst'), encoding='utf-8') as f:
 
 setuptools.setup(
     name="fiases",
-    version="1.8.59",
+    version="1.8.83",
     author="Oleg Sitnikov",
     author_email="oleg.sitnikov@icloud.com",
     description="FIAS Elasticsearch integration",
@@ -25,7 +25,8 @@ setuptools.setup(
         'tqdm>=4.40.1',
         'urllib3>=1.25.7',
         'lxml>=4.4.2',
-        'py-dateutil>=2.2'
+        'py-dateutil>=2.2',
+        'requests>=2.22.0'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

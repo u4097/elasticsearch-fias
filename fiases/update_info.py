@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Статистика обновления ФИАС
 from elasticsearch_dsl import Index, Document, Date, Keyword, Integer
-
+from fiases.fias_data import ES
 import fiases.fias_data
 
 info = Index(fiases.fias_data.INFO_INDEX)
