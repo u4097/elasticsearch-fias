@@ -10,6 +10,28 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from fiases.init_db import createConnection
 from elasticsearch_dsl.connections import connections
 
+addr_guid_search_template={ "script": { "lang": "mustache", "source": {
+  "_source": {
+    "includes": [
+      "full_address",
+      "address",
+      "district_full",
+      "settlement_full",
+      "street_full",
+      "postal_code",
+      "region_code",
+      "okato",
+      "ifns_fl",
+      "code",
+      "ao_guid",
+      "ao_level"
+    ]
+  }, "query": { "term": {
+      "ao_guid": {
+        "value": "{{guid}}" } } } } } }
+
+def createAddrSearchTemplate(script_id="address_guid"):
+    ES.put_script(id=script_id,body=addr_guid_search_template)
 
 def createTmpDir():
     TMPDIR = '/tmp/'
