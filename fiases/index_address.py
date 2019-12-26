@@ -11,10 +11,10 @@ from fiases.fias_data import ES
 
 def createIndex(isUpdate=True):
     # 5. Создаем класс для хранения Адресов
-    address = Index(fiases.fias_data.ADDRESS_INDEX)
+    address = Index(address.INDEX)
     address.close()
 
-    houses = Index(fiases.fias_data.HOUSE_INDEX)
+    houses = Index(houses.INDEX)
     @houses.document
     class House(Document, InnerDoc):
         houseId = Keyword()
@@ -158,7 +158,7 @@ def createIndex(isUpdate=True):
         scanResStreet = scan(ES,
                              scroll='1h',
                              query=queryUpdate,
-                             index=fiases.fias_data.ADDRESS_INDEX)
+                             index=address.INDEX)
         ADDR_UPDATE_CNT = Address.search()\
             .query("term", update_date=update_date)\
             .filter("term", ao_level="7").count()
@@ -167,7 +167,7 @@ def createIndex(isUpdate=True):
         scanResStreet = scan(ES,
                              scroll='1h',
                              query=queryAllStreet,
-                             index=fiases.fias_data.ADDRESS_INDEX)
+                             index=address.INDEX)
 
         ADDR_UPDATE_CNT = Address.search()\
             .query("term", ao_level="7").count()

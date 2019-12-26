@@ -37,7 +37,7 @@ def genFullHouserData():
     for event, node in doc:
         if event == \
                 pulldom.START_ELEMENT and node.tagName \
-                == address.ADDR_OBJECT_TAG:
+                == address.TAG:
             yield {
                 "_index": address.IndexName,
                 "_type": "_doc",
@@ -84,8 +84,8 @@ def genFullHouserData():
 
 
 # print("Удаление адресов...")
-# print(address.addressFullXmlFile)
-# # print("size: " + str(size(ADDR_INFO_DIC['addressFullXmlSize'], system=si)))
+# print(address.xml_file)
+# # print("size: " + str(size(ADDR_INFO_DIC['xml_file_size'], system=si)))
 ADDR_CNT = 0
 for ok, info in tqdm(parallel_bulk(es,
                                    genFullHouserData(),
@@ -93,7 +93,7 @@ for ok, info in tqdm(parallel_bulk(es,
                                    raise_on_exception=False),
                      unit=' адрес',
                      desc=' удалено',
-                     total=address.ADDRESS_COUNT):
+                     total=address.COUNT):
     if (not ok):
         print(ok, info)
     ADDR_CNT = ADDR_CNT + 1
@@ -116,7 +116,7 @@ sn_body = {
         "taken_because": "backup before update"
     }
 }
-# sn.create(repository="fias", snapshot=ADDRESS_INDEX, body=sn_body)
+# sn.create(repository="fias", snapshot=INDEX, body=sn_body)
 
 # print(sn.get(repository="fias", snapshot="houses"))
 

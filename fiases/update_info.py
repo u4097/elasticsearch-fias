@@ -38,5 +38,5 @@ def findInfoDoc():
 
 # infoDoc = InfoDoc()
 # infoDoc.fias_version_date = VERSION_DATE_REPORT
-# infoDoc.count_update_houses = ADDRESS_COUNT
+# infoDoc.count_update_houses = COUNT
 # infoDoc.save()

@@ -47,7 +47,7 @@ def getRestoreStatus():
 
 
 def updateFias():
-    if not ES.indices.exists(fiases.fias_data.ADDRESS_INDEX):
+    if not ES.indices.exists(address.INDEX):
         print("No ADDR index found. Start import full...")
         importFull()
     else:

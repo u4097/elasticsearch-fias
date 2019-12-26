@@ -27,8 +27,8 @@ def import_address(address):
     unRarFullAdddr(address)
 
     # 4. маппинг
-    if (ES.indices.exists(fiases.fias_data.ADDRESS_INDEX)):
-        ES.indices.delete(index=fiases.fias_data.ADDRESS_INDEX)
+    if (ES.indices.exists(address.INDEX)):
+        ES.indices.delete(index=address.INDEX)
 
     SHARDS_NUMBER = "1"
     ANALYSIS = {
@@ -280,7 +280,7 @@ def import_address(address):
             }
         }
     }
-    ES.indices.create(index=fiases.fias_data.ADDRESS_INDEX,
+    ES.indices.create(index=address.INDEX,
                       body={
                           'mappings': {
                               "dynamic": False,
@@ -293,18 +293,18 @@ def import_address(address):
     address.createPreprocessor()
 
     # 7. импорт
-    doc = parse(fiases.fias_data.WORK_DIR + address.addressFullXmlFile)
+    doc = parse(fiases.fias_data.WORK_DIR + address.xml_file)
 
     def importFull():
         counter = 0
         for event, node in doc:
             if event == pulldom.START_ELEMENT \
-               and node.tagName == fiases.fias_data.ADDR_OBJECT_TAG:
+               and node.tagName == address.TAG:
                 yield {
-                    "_index": fiases.fias_data.ADDRESS_INDEX,
+                    "_index": address.INDEX,
                     "_type": "_doc",
                     "_op_type": fiases.fias_data.INDEX_OPER,
-                    'pipeline': fiases.fias_data.ADDR_PIPELINE_ID,
+                    'pipeline': address.PIPELINE,
                     "_id": node.getAttribute("AOID"),
                     "ao_guid": node.getAttribute("AOGUID"),
                     "parent_guid": node.getAttribute("PARENTGUID"),
@@ -352,7 +352,7 @@ def import_address(address):
                                        raise_on_exception=False),
                          unit=' адрес',
                          desc=' загружено',
-                         total=fiases.fias_data.ADDRESS_COUNT):
+                         total=address.COUNT):
         if (not ok):
             print(ok, info)
         ADDR_CNT = ADDR_CNT + 1

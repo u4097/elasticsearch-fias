@@ -15,22 +15,22 @@ from fiases.fias_info import getUpdateVersion
 from fiases.fias_download import downloadFull, unRarFull
 
 
-def import_houses(houses):
+def import_stead(stead):
 
-    fiases.fias_data.createTmpDir()
+    # fiases.fias_data.createTmpDir()
 
     # 1. версия
     getUpdateVersion()
 
     # 2. загрузка
-    downloadFull()
+    # downloadFull()
 
     # 3. распаковка
-    unRarFull(houses)
+    unRarFull(stead)
 
     # 4. маппинг
-    if (ES.indices.exists(fiases.fias_data.HOUSE_INDEX)):
-        ES.indices.delete(index=fiases.fias_data.HOUSE_INDEX)
+    if (ES.indices.exists(stead.INDEX)):
+        ES.indices.delete(index=stead.INDEX)
 
     SHARDS_NUMBER = "1"
     SETTINGS = {
@@ -49,16 +49,22 @@ def import_houses(houses):
         }
     }
     PROPERTIES = {
-        "ao_guid": {
-            "type": "keyword"
-        },
-        "house_guid": {
+        "parent_guid": {
             "type": "keyword"
         },
         "build_num": {
             "type": "keyword",
         },
-        "house_num": {
+        "live_status": {
+            "type": "keyword",
+        },
+        "oper_status": {
+            "type": "keyword",
+        },
+        "stead_guid": {
+            "type": "keyword",
+        },
+        "stead_num": {
             "type": "keyword",
         },
         "str_num": {
@@ -68,9 +74,6 @@ def import_houses(houses):
             "type": "keyword"
         },
         "ifns_ul": {
-            "type": "keyword"
-        },
-        "region_code": {
             "type": "keyword"
         },
         "postal_code": {
@@ -100,12 +103,6 @@ def import_houses(houses):
         "cad_num": {
             "type": "keyword"
         },
-        "est_status": {
-            "type": "keyword"
-        },
-        "norm_doc": {
-            "type": "keyword"
-        },
         "terr_ifns_fl": {
             "type": "keyword"
         },
@@ -119,7 +116,7 @@ def import_houses(houses):
             "type": "keyword"
         }
     }
-    ES.indices.create(index=fiases.fias_data.HOUSE_INDEX,
+    ES.indices.create(index=stead.INDEX,
                       body={
                           'mappings': {
                               "dynamic": False,
@@ -129,24 +126,26 @@ def import_houses(houses):
                       })
 
     # 6. препроцессор
-    houses.createPreprocessor()
+    stead.createPreprocessor()
 
     # 7. импорт
-    doc = parse(fiases.fias_data.WORK_DIR + houses.xml_file)
+    doc = parse(fiases.fias_data.WORK_DIR + stead.xml_file)
 
     def importFull():
         counter = 0
         for event, node in doc:
             if event == pulldom.START_ELEMENT \
-               and node.tagName == houses.TAG:
+               and node.tagName == stead.TAG:
                 yield {
-                    "_index": fiases.fias_data.HOUSE_INDEX,
+                    "_index": stead.INDEX,
                     "_type": "_doc",
                     "_op_type": fiases.fias_data.INDEX_OPER,
-                    'pipeline': fiases.fias_data.PIPELINE,
-                    "_id": node.getAttribute("HOUSEID"),
-                    "ao_guid": node.getAttribute("AOGUID"),
-                    "house_guid": node.getAttribute("HOUSEGUID"),
+                    'pipeline': stead.PIPELINE,
+                    "_id": node.getAttribute("STEADID"),
+                    "parent_guid": node.getAttribute("PARENTGUID"),
+                    "stead_guid": node.getAttribute("STEADGUID"),
+                    "oper_status":node.getAttribute("OPERSTATUS"),
+                    "live_status":node.getAttribute("LIVESTATUS"),
                     "region_code": node.getAttribute("REGIONCODE"),
                     "postal_code": node.getAttribute("POSTALCODE"),
                     "start_date": node.getAttribute("STARTDATE"),
@@ -160,12 +159,8 @@ def import_houses(houses):
                     "terr_ifns_fl": node.getAttribute("TERRIFNSFL"),
                     "terr_ifns_ul": node.getAttribute("TERRIFNSUL"),
                     "norm_doc": node.getAttribute("NORMDOC"),
-                    "house_num": node.getAttribute("HOUSENUM"),
-                    "build_num": node.getAttribute("BUILDNUM"),
-                    "str_num": node.getAttribute("STRUCNUM"),
-                    "counter": node.getAttribute("COUNTER"),
+                    "stead_num": node.getAttribute("NUMBER"),
                     "cad_num": node.getAttribute("CADNUM"),
-                    "est_status": node.getAttribute("ESTSTATUS"),
                     "bazis_create_date": fiases.fias_data.CREATE_DATE_ZERO,
                     "bazis_update_date": fiases.fias_data.UPDATE_DATE_ZERO,
                     "update_date": node.getAttribute("UPDATEDATE"),
@@ -178,7 +173,7 @@ def import_houses(houses):
                                        raise_on_exception=False),
                          unit=' адрес',
                          desc=' загружено',
-                         total=fiases.fias_data.COUNT):
+                         total=stead.COUNT):
         if (not ok):
             print(ok, info)
 
@@ -189,5 +184,5 @@ def import_houses(houses):
 
 
 
-# houses = fiases.fias_data.Houses()
-# import_houses(houses=houses)
+stead = fiases.fias_data.Stead()
+import_stead(stead=stead)

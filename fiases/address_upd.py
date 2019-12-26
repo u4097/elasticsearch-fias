@@ -9,7 +9,7 @@ from elasticsearch_dsl import Search
 
 # Local modules:
 import fiases.fias_data
-from fiases.fias_download import uprarUpdateAdddr
+from fiases.fias_download import unrarUpdate
 from fiases.fias_info import getUpdateVersion
 from fiases.update_info import findInfoDoc
 from fiases.fias_data import ES
@@ -20,24 +20,24 @@ def addressUpdate(isDebug, address):
     IS_DEBUG = isDebug
 
     # 3. распаковка
-    uprarUpdateAdddr(address)
+    unrarUpdate(address)
 
     # 4. обновление
     rootDeltaXML = etree.parse(fiases.fias_data.WORK_DIR
-                               + address.addressDeltaFile).getroot()
-    address.addressDeltaRecSize = len(rootDeltaXML.getchildren())
+                               + address.xml_delta_file).getroot()
+    address.delta_rec_size = len(rootDeltaXML.getchildren())
 
-    doc = parse(fiases.fias_data.WORK_DIR + address.addressDeltaFile)
+    doc = parse(fiases.fias_data.WORK_DIR + address.xml_delta_file)
 
     def updateIndex():
         """Обновление индекса"""
         for event, node in doc:
-            if event == pulldom.START_ELEMENT and node.tagName == fiases.fias_data.ADDR_OBJECT_TAG:
+            if event == pulldom.START_ELEMENT and node.tagName == address.TAG:
                 yield {
-                    "_index": fiases.fias_data.ADDRESS_INDEX,
+                    "_index": address.INDEX,
                     "_type": "_doc",
                     "_op_type": fiases.fias_data.INDEX_OPER,
-                    'pipeline': fiases.fias_data.ADDR_PIPELINE_ID,
+                    'pipeline': address.PIPELINE,
                     "_id": node.getAttribute("AOID"),
                     "ao_guid": node.getAttribute("AOGUID"),
                     "parent_guid": node.getAttribute("PARENTGUID"),
@@ -83,7 +83,7 @@ def addressUpdate(isDebug, address):
                                            raise_on_exception=False),
                              unit=' address',
                              desc='updated',
-                             total=address.addressDeltaRecSize):
+                             total=address.delta_rec_size):
             if (not ok):
                 if IS_DEBUG:
                     print(ok, info)
@@ -95,7 +95,7 @@ def addressUpdate(isDebug, address):
             if (not ok):
                 print(ok, info)
 
-    return address.addressDeltaRecSize
+    return address.delta_rec_size
 
 
 # addressUpdate(isDebug=True)

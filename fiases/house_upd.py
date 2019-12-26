@@ -7,7 +7,7 @@ from xml.dom.pulldom import parse
 from elasticsearch.helpers import parallel_bulk
 
 # Local modules:
-from fiases.fias_download import uprarUpdateHouses
+from fiases.fias_download import unrarUpdate
 import fiases.fias_data
 
 
@@ -16,25 +16,25 @@ def housesUpdate(isDebug, houses):
     IS_DEBUG = isDebug
 
     # 3. распаковка
-    uprarUpdateHouses(houses)
+    unrarUpdate(houses)
 
     rootDeltaXML = etree.parse(fiases.fias_data.WORK_DIR
-                               + houses.housesDeltaFile).getroot()
-    houses.housesDeltaRecSize = len(rootDeltaXML.getchildren())
+                               + houses.xml_delta_file).getroot()
+    houses.delta_rec_size = len(rootDeltaXML.getchildren())
 
-    doc = parse(fiases.fias_data.WORK_DIR + houses.housesDeltaFile)
+    doc = parse(fiases.fias_data.WORK_DIR + houses.xml_delta_file)
 
     def updateIndex():
         """Обновление индекса"""
         for event, node in doc:
             if event == \
                     pulldom.START_ELEMENT and node.tagName \
-                    == fiases.fias_data.HOUSES_OBJECT_TAG:
+                    == houses.TAG:
                 yield {
-                    "_index": fiases.fias_data.HOUSE_INDEX,
+                    "_index": houses.INDEX,
                     "_type": "_doc",
                     "_op_type": fiases.fias_data.INDEX_OPER,
-                    'pipeline': fiases.fias_data.HOUSES_PIPELINE_ID,
+                    'pipeline': fiases.fias_data.PIPELINE,
                     "_id": node.getAttribute("HOUSEID"),
                     "ao_guid": node.getAttribute("AOGUID"),
                     "region_code": node.getAttribute("REGIONCODE"),
@@ -68,7 +68,7 @@ def housesUpdate(isDebug, houses):
                                            raise_on_exception=False),
                              unit=' house',
                              desc='updated',
-                             total=houses.housesDeltaRecSize):
+                             total=houses.delta_rec_size):
             # ADDR_CNT = ADDR_CNT + 1
             if (not ok):
                 if IS_DEBUG:
@@ -82,7 +82,7 @@ def housesUpdate(isDebug, houses):
             if (not ok):
                 print(ok, info)
 
-    return houses.housesDeltaRecSize
+    return houses.delta_rec_size
 
 
 # housesUpdate(isDebug=True)

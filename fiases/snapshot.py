@@ -15,21 +15,21 @@ def register(location="/usr/share/elasticsearch/snapshots"):
     sn.create_repository(repository="fias", body=sn_body)
 
 def restore():
-    ES.indices.delete(index=fiases.fias_data.ADDRESS_INDEX, ignore=[400, 404])
-    ES.indices.delete(index=fiases.fias_data.HOUSE_INDEX, ignore=[400, 404])
+    ES.indices.delete(index=address.INDEX, ignore=[400, 404])
+    ES.indices.delete(index=houses.INDEX, ignore=[400, 404])
 
     sn.restore(repository="fias",
            snapshot="fias_full",
            body={
-               "indices": [fiases.fias_data.ADDRESS_INDEX, fiases.fias_data.HOUSE_INDEX]
+               "indices": [address.INDEX, houses.INDEX]
            })
 
 def restoreIfNotExist():
-    if not ES.indices.exists(fiases.fias_data.ADDRESS_INDEX):
+    if not ES.indices.exists(address.INDEX):
         sn.restore(repository="fias",
                snapshot="fias_full",
                body={
-                   "indices": [fiases.fias_data.ADDRESS_INDEX, fiases.fias_data.HOUSE_INDEX]
+                   "indices": [address.INDEX, houses.INDEX]
                })
     else:
         pass
@@ -42,7 +42,7 @@ def createFullSnapshot():
         pass
 
     sn_body = {
-        "indices": [fiases.fias_data.ADDRESS_INDEX, fiases.fias_data.HOUSE_INDEX],
+        "indices": [address.INDEX, houses.INDEX],
         "ignore_unavailable": "true",
         "include_global_state": "false",
         "metadata": {

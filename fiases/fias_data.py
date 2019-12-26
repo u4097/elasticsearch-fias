@@ -33,14 +33,15 @@ addr_guid_search_template={ "script": { "lang": "mustache", "source": {
 def createAddrSearchTemplate(script_id="address_guid"):
     ES.put_script(id=script_id,body=addr_guid_search_template)
 
+TMPDIR = '/tmp/'
+WORK_DIR =  str(Path.home()) + TMPDIR
+
 def createTmpDir():
-    TMPDIR = '/tmp/'
     WRITE_MODE = 0o777
-    work_dir = str(Path.home()) + TMPDIR
-    if os.path.isdir(work_dir):
-        shutil.rmtree(work_dir, ignore_errors=True)
-    os.makedirs(work_dir, mode=WRITE_MODE, exist_ok=False)
-    return work_dir
+    if os.path.isdir(WORK_DIR):
+        shutil.rmtree(WORK_DIR, ignore_errors=True)
+    os.makedirs(WORK_DIR, mode=WRITE_MODE, exist_ok=False)
+    return WORK_DIR
 
 
 DATE_TIME_ZONE = 'T00:00:00Z'
@@ -48,10 +49,6 @@ def getDateNow():
     return datetime.datetime.now().strftime("%Y-%m-%d") + DATE_TIME_ZONE
 
 
-WORK_DIR = createTmpDir()
-
-ADDRESS_INDEX = 'address'
-HOUSE_INDEX = 'houses'
 HOST = 'es01'
 TIME_OUT = 2000
 ES = Elasticsearch(host='es01',port=9200, timeout=20000, connection_class=RequestsHttpConnection)
@@ -67,17 +64,9 @@ UPDATE_DATE_ZERO = getDateNow()
 VERSION_DATE = ''
 VERSION_DATE_HOUSE = ''
 VERSION_REPORT_DATE = ''
-ADDRESS_COUNT = 4000000
-AS_ADDR_FILE = 'AS_ADDROBJ_*'
-AS_DEL_ADDR_FILE = 'AS_DEL_ADDROBJ_*'
-ADDR_OBJECT_TAG = 'Object'
-ADDR_PIPELINE_ID = 'addr_drop_pipeline'
 
-HOUSES_COUNT = 70000000
-AS_HOUSES_FILE = 'AS_HOUSE_*'
-AS_DEL_HOUSES_FILE = 'AS_DEL_HOUSE_*'
-HOUSES_OBJECT_TAG = 'House'
-HOUSES_PIPELINE_ID = 'house_drop_pipeline'
+
+# Fias connections data
 
 FIAS_XML_RAR = 'fias_xml.rar'
 FIAS_DELTA_XML_RAR = 'fias_delta_xml.rar'
@@ -90,15 +79,18 @@ URL_DELTA = FIAS_URL + FIAS_DELTA_XML_RAR
 
 class Address:
 
-    addressFullXmlFile = ''
-    addressFullXmlSize = 0
+    INDEX = 'address'
+    COUNT = 4000000
+    FILE = 'AS_ADDROBJ_*'
+    TAG = 'Object'
+    PIPELINE = 'addr_drop_pipeline'
 
-    addressDELFullXMLFile = ''
-    addressDELFullXmlSize = 0
+    xml_file = ''
+    xml_file_size = 0
 
-    addressDeltaFile = ''
-    addressDeltaSize = 0
-    addressDeltaRecSize = 0
+    xml_delta_file = ''
+    xml_delta_file_size = 0
+    delta_rec_size = 0
 
     def createPreprocessor(self):
         dropPipeline = {
@@ -118,21 +110,24 @@ class Address:
                 }
             }]
         }
-        IngestClient(ES).put_pipeline(id=ADDR_PIPELINE_ID,
+        IngestClient(ES).put_pipeline(id=PIPELINE,
                                       body=dropPipeline)
 
 
 class Houses:
+    INDEX = 'houses'
+    COUNT = 70000000
+    FILE = 'AS_HOUSE_*'
+    AS_DEL_HOUSES_FILE = 'AS_DEL_HOUSE_*'
+    TAG = 'House'
+    PIPELINE = 'house_drop_pipeline'
 
-    housesFullXmlFile = ''
-    housesFullXmlSize = 0
+    xml_file = ''
+    xml_file_size = 0
 
-    housesDELFullXMLFile = ''
-    housesDELFullXmlSize = 0
-
-    housesDeltaFile = ''
-    housesDeltaSize = 0
-    housesDeltaRecSize = 0
+    xml_delta_file = ''
+    xml_delta_file_size = 0
+    delta_rec_size = 0
 
     def createPreprocessor(self):
         dropPipeline = {
@@ -160,5 +155,54 @@ class Houses:
                 }
             ]
         }
-        IngestClient(ES).put_pipeline(id=HOUSES_PIPELINE_ID,
+        IngestClient(ES).put_pipeline(id=self.PIPELINE,
+                                      body=dropPipeline)
+
+
+class Stead:
+
+    INDEX = 'stead'
+
+    COUNT = 70000000
+    FILE = 'AS_STEAD_*'
+    TAG = 'Stead'
+    PIPELINE = 'stead_drop_pipeline'
+
+    DEL_FILE = 'AS_DEL_STEAD_*'
+
+    xml_file = ''
+    xml_file_size = 0
+
+    xml_delta_file = ''
+    xml_delta_file_size = 0
+    delta_rec_size = 0
+
+
+    def createPreprocessor(self):
+        dropPipeline = {
+            "description": "drop old stead",
+            "processors": [
+                {
+                    "drop": {
+                        "if": """
+        //Получаем текущую дату из параметра в формате ISO-8601
+        ZonedDateTime zdt = ZonedDateTime.parse(ctx.bazis_update_date);
+        long millisDateTime = zdt.toInstant().toEpochMilli();
+        ZonedDateTime nowDate =
+        ZonedDateTime.ofInstant(Instant.ofEpochMilli(millisDateTime), ZoneId.of("Z")); 
+
+        //Получаем end_date 
+        ZonedDateTime endDateZDT = ZonedDateTime.parse(ctx.end_date + "T00:00:00Z");
+        long millisDateTimeEndDate = endDateZDT.toInstant().toEpochMilli();
+        ZonedDateTime endDate =
+        ZonedDateTime.ofInstant(Instant.ofEpochMilli(millisDateTimeEndDate), ZoneId.of("Z")); 
+
+        // Сравниваем даты
+          return endDate.isBefore(nowDate)
+        """
+                    }
+                }
+            ]
+        }
+        IngestClient(ES).put_pipeline(id=self.PIPELINE,
                                       body=dropPipeline)
