@@ -17,13 +17,13 @@ from fiases.fias_download import downloadFull, unRarFull
 
 def import_room(room):
 
-    # fiases.fias_data.createTmpDir()
+    fiases.fias_data.createTmpDir()
 
     # 1. версия
     getUpdateVersion()
 
     # 2. загрузка
-    # downloadFull()
+    downloadFull()
 
     # 3. распаковка
     unRarFull(room)

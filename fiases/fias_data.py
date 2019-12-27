@@ -34,7 +34,9 @@ def createAddrSearchTemplate(script_id="address_guid"):
     ES.put_script(id=script_id,body=addr_guid_search_template)
 
 TMPDIR = '/tmp/'
-WORK_DIR =  str(Path.home()) + TMPDIR
+# WORK_DIR =  str(Path.home()) + TMPDIR
+#!!!! CHANGE THIS BACK !!!!!
+WORK_DIR = "/Volumes/DRIVE120G" + TMPDIR
 
 def createTmpDir():
     WRITE_MODE = 0o777
@@ -211,7 +213,7 @@ class Room:
 
     INDEX = 'room'
 
-    COUNT = 100_000_000
+    COUNT = 51_974_148 # 4h 20 min 
     FILE = 'AS_ROOM_*'
     TAG = 'Room'
     PIPELINE = 'room_drop_pipeline'
