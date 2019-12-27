@@ -163,7 +163,7 @@ class Stead:
 
     INDEX = 'stead'
 
-    COUNT = 70000000
+    COUNT = 12_513_854
     FILE = 'AS_STEAD_*'
     TAG = 'Stead'
     PIPELINE = 'stead_drop_pipeline'
@@ -206,3 +206,52 @@ class Stead:
         }
         IngestClient(ES).put_pipeline(id=self.PIPELINE,
                                       body=dropPipeline)
+
+class Room:
+
+    INDEX = 'room'
+
+    COUNT = 100_000_000
+    FILE = 'AS_ROOM_*'
+    TAG = 'Room'
+    PIPELINE = 'room_drop_pipeline'
+
+    DEL_FILE = 'AS_DEL_ROOM_*'
+
+    xml_file = ''
+    xml_file_size = 0
+
+    xml_delta_file = ''
+    xml_delta_file_size = 0
+    delta_rec_size = 0
+
+
+    def createPreprocessor(self):
+        dropPipeline = {
+            "description": "drop old room",
+            "processors": [
+                {
+                    "drop": {
+                        "if": """
+        //Получаем текущую дату из параметра в формате ISO-8601
+        ZonedDateTime zdt = ZonedDateTime.parse(ctx.bazis_update_date);
+        long millisDateTime = zdt.toInstant().toEpochMilli();
+        ZonedDateTime nowDate =
+        ZonedDateTime.ofInstant(Instant.ofEpochMilli(millisDateTime), ZoneId.of("Z")); 
+
+        //Получаем end_date 
+        ZonedDateTime endDateZDT = ZonedDateTime.parse(ctx.end_date + "T00:00:00Z");
+        long millisDateTimeEndDate = endDateZDT.toInstant().toEpochMilli();
+        ZonedDateTime endDate =
+        ZonedDateTime.ofInstant(Instant.ofEpochMilli(millisDateTimeEndDate), ZoneId.of("Z")); 
+
+        // Сравниваем даты
+          return endDate.isBefore(nowDate)
+        """
+                    }
+                }
+            ]
+        }
+        IngestClient(ES).put_pipeline(id=self.PIPELINE,
+                                      body=dropPipeline)
+
